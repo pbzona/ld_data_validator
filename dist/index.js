@@ -8288,10 +8288,10 @@ exports.traverse = (fn) => {
     const flags = fs.readdirSync(path.join(projectsDir, project, 'flags'));
     for (let flag of flags) {
       console.log('FLAG:', flag);
-      const configs = fs.readdirSync(path.join(projectsDir, project, flag));
+      const configs = fs.readdirSync(path.join(projectsDir, project, 'flags', flag));
       for (let config of configs) {
         console.log('CONFIG', config);
-        const pathToConfigFile = path.join(projectsDir, project, flag, config);
+        const pathToConfigFile = path.join(projectsDir, project, 'flags', flag, config);
         console.log(pathToConfigFile);
         fn(pathToConfigFile);
       }
