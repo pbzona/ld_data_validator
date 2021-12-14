@@ -8302,7 +8302,9 @@ exports.traverse = (fn) => {
 exports.validate = (pathToFile) => {
   // Do some validation on the current file
   try {
-    console.log(fs.readFileSync(pathToFile));
+    // Reads the file into an operable json object
+    const configJson = JSON.parse(fs.readFileSync(pathToFile).toString());
+    console.log(configJson);
   } catch (err) {
     console.error('Error reading config file: ', err);
   }
