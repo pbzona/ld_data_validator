@@ -8284,11 +8284,15 @@ exports.traverse = (fn) => {
   const projects = fs.readdirSync(projectsDir);
   
   for (let project of projects) {
+    console.log('PROJECT:', project);
     const flags = fs.readdirSync(path.join(projectsDir, project));
     for (let flag of flags) {
+      console.log('FLAG:', flag);
       const configs = fs.readdirSync(path.join(projectsDir, project, flag));
       for (let config of configs) {
+        console.log('CONFIG', config);
         const pathToConfigFile = path.join(projectsDir, project, flag, config);
+        console.log(pathToConfigFile);
         fn(pathToConfigFile);
       }
     }
@@ -8297,7 +8301,11 @@ exports.traverse = (fn) => {
 
 exports.validate = (pathToFile) => {
   // Do some validation on the current file
-  console.log(fs.readFileSync(pathToFile));
+  try {
+    console.log(fs.readFileSync(pathToFile));
+  } catch (err) {
+    console.error('Error reading config file: ', err);
+  }
 }
 
 /***/ }),
