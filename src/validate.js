@@ -7,7 +7,7 @@ exports.traverse = (fn) => {
   
   for (let project of projects) {
     console.log('PROJECT:', project);
-    const flags = fs.readdirSync(path.join(projectsDir, project));
+    const flags = fs.readdirSync(path.join(projectsDir, project, 'flags'));
     for (let flag of flags) {
       console.log('FLAG:', flag);
       const configs = fs.readdirSync(path.join(projectsDir, project, flag));
