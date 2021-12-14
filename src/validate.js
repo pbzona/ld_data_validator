@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 exports.traverse = (fn) => {
-  const projectsDir = path.join(__dirname, 'projects')
+  const projectsDir = path.join(__dirname, '..', 'projects')
   const projects = fs.readdirSync(projectsDir);
   
   for (let project of projects) {
