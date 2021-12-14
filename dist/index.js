@@ -8280,7 +8280,7 @@ const fs = __nccwpck_require__(7147);
 const path = __nccwpck_require__(1017);
 
 exports.traverse = (fn) => {
-  const projectsDir = path.join(__dirname, 'projects')
+  const projectsDir = path.join(process.cwd(), 'projects')
   const projects = fs.readdirSync(projectsDir);
   
   for (let project of projects) {
