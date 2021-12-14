@@ -2,6 +2,8 @@ const fs = require('fs');
 const core = require('@actions/core');
 const github = require('@actions/github');
 
+const { traverse, validate } = require('./src/validate');
+
 try {
   const time = new Date().toTimeString();
   core.setOutput('time', time);
@@ -17,6 +19,9 @@ try {
   // Export file structure for debugging
   const ls = fs.readdirSync(cwd);
   core.setOutput('contents', ls);
+
+  // Do the validation here
+  traverse(validate);
 } catch(err) {
   core.setFailed(err.message);
 }

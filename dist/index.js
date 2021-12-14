@@ -8273,6 +8273,35 @@ function wrappy (fn, cb) {
 
 /***/ }),
 
+/***/ 1002:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+const fs = __nccwpck_require__(7147);
+const path = __nccwpck_require__(1017);
+
+exports.traverse = (fn) => {
+  const projectsDir = path.join(__dirname, 'projects')
+  const projects = fs.readdirSync(projectsDir);
+  
+  for (let project of projects) {
+    const flags = fs.readdirSync(path.join(projectsDir, project));
+    for (let flag of flags) {
+      const configs = fs.readdirSync(path.join(projectsDir, project, flag));
+      for (let config of configs) {
+        const pathToConfigFile = path.join(projectsDir, project, flag, config);
+        fn(pathToConfigFile);
+      }
+    }
+  }
+}
+
+exports.validate = (pathToFile) => {
+  // Do some validation on the current file
+  console.log(fs.readFileSync(pathToFile));
+}
+
+/***/ }),
+
 /***/ 2877:
 /***/ ((module) => {
 
@@ -8446,6 +8475,8 @@ const fs = __nccwpck_require__(7147);
 const core = __nccwpck_require__(2186);
 const github = __nccwpck_require__(5438);
 
+const { traverse, validate } = __nccwpck_require__(1002);
+
 try {
   const time = new Date().toTimeString();
   core.setOutput('time', time);
@@ -8461,6 +8492,9 @@ try {
   // Export file structure for debugging
   const ls = fs.readdirSync(cwd);
   core.setOutput('contents', ls);
+
+  // Do the validation here
+  traverse(validate);
 } catch(err) {
   core.setFailed(err.message);
 }
