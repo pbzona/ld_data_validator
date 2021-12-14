@@ -3,6 +3,8 @@ description: 'Validate LD data before syncing'
 outputs:
   time:
     description: 'Time the action ran'
+  event:
+    description: 'The event that triggered the action'
 runs:
   using: 'node16'
   main: 'index.js'
