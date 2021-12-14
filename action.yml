@@ -1,0 +1,8 @@
+name: 'LD Data Validator'
+description: 'Validate LD data before syncing'
+outputs:
+  time:
+    description: 'Time the action ran'
+runs:
+  using: 'node16'
+  main: 'index.js'
