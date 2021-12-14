@@ -5,6 +5,10 @@ outputs:
     description: 'Time the action ran'
   event:
     description: 'The event that triggered the action'
+  cwd:
+    description: 'Current working directory of the process'
+  contents:
+    description: 'Contents of the current working directory'
 runs:
   using: 'node16'
   main: 'dist/index.js'
