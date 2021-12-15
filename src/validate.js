@@ -37,8 +37,6 @@ exports.validate = (pathToFile) => {
 }
 
 exports.getFilesChangedInLastCommit = () => {
-  const filesChanged = execSync('git diff --name-only HEAD HEAD~1').toString().split('\n');
-  for (let file of filesChanged) {
-    console.log(file);
-  }
+  const filesChanged = execSync('git diff --name-only HEAD HEAD~1');
+  return filesChanged.toString().split('\n');
 }

@@ -8315,10 +8315,8 @@ exports.validate = (pathToFile) => {
 }
 
 exports.getFilesChangedInLastCommit = () => {
-  const filesChanged = execSync('git diff --name-only HEAD HEAD~1').toString().split('\n');
-  for (let file of filesChanged) {
-    console.log(file);
-  }
+  const filesChanged = execSync('git diff --name-only HEAD HEAD~1');
+  return filesChanged.toString().split('\n');
 }
 
 /***/ }),
@@ -8504,7 +8502,7 @@ const fs = __nccwpck_require__(7147);
 const core = __nccwpck_require__(2186);
 const github = __nccwpck_require__(5438);
 
-const { traverse, validate } = __nccwpck_require__(1002);
+const { traverse, validate, getFilesChangedInLastCommit } = __nccwpck_require__(1002);
 
 try {
   const time = new Date().toTimeString();
@@ -8521,6 +8519,10 @@ try {
   // Export file structure for debugging
   const ls = fs.readdirSync(cwd);
   core.setOutput('contents', ls);
+
+  // Export list of files changed in last commit
+  filesChanged = getFilesChangedInLastCommit();
+  core.setOutput('filesChanged', filesChanged);
 
   // Do the validation here
   traverse(validate);
