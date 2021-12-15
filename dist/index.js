@@ -8274,19 +8274,67 @@ function wrappy (fn, cb) {
 /***/ }),
 
 /***/ 6254:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 const path = __nccwpck_require__(1017);
 const fs = __nccwpck_require__(7147);
+const { execSync } = __nccwpck_require__(2081);
 
-exports.readFlagConfig = (path) => {
+const readFlagConfig = (path) => {
   // Returns a json object ready to use
   return JSON.parse(fs.readFileSync(path).toString());
 }
 
 // Tells whether a file is a flag configuration file or not
-exports.isFlagConfigFile = (filePath) => {
-  return path.parse(filePath).dir.split('/')[0] == 'projects'
+const isFlagConfigFile = (filePath) => {
+  return path.parse(filePath).dir.split('/')[0] == 'projects';
+}
+
+// Returns array of files that were changed in this commit
+const getFilesChangedInLastCommit = () => {
+  const filesChanged = execSync('git diff --name-only HEAD HEAD~1');
+  return filesChanged.toString().split('\n');
+}
+
+// Return array of keys of flags that were changed in this commit
+const getModifiedFlags = (updatedFiles) => {
+  const flags = updatedFiles.filter(file => {
+      return isFlagConfigFile(file);
+    }).map(file => {
+      const flagConfig = readFlagConfig(file);
+      return flagConfig.key;
+    });
+
+  return [...new Set(flags)]; // Removes duplicates since each flag dir could have multiple changed files
+}
+
+// Returns an object
+const getFlagModifications = (pathToFile) => {
+  // Need branch to reset checkout as looking back will cause us to enter a detached HEAD state
+  const currentBranch = execSync('git rev-parse --abbrev-ref HEAD');
+
+  const modifications = {}
+  modifications.new = readFlagConfig(pathToFile);
+  execSync('git checkout HEAD~1');
+  
+  // What happens for newly created flag files?
+  if (fs.existsSync(pathToFile)) {
+    modifications.old = readFlagConfig(pathToFile);
+  } else {
+    modifications.old = {}
+  }
+
+  // Go back to current branch before returning result
+  execSync(`git checkout ${currentBranch}`);
+  return modifications;
+}
+
+module.exports = {
+  readFlagConfig,
+  isFlagConfigFile,
+  getFilesChangedInLastCommit,
+  getModifiedFlags,
+  getFlagModifications
 }
 
 /***/ }),
@@ -8296,9 +8344,8 @@ exports.isFlagConfigFile = (filePath) => {
 
 const fs = __nccwpck_require__(7147);
 const path = __nccwpck_require__(1017);
-const { execSync } = __nccwpck_require__(2081);
 
-const { readFlagConfig, isFlagConfigFile } = __nccwpck_require__(6254);
+const { readFlagConfig } = __nccwpck_require__(6254);
 
 exports.traverse = (fn) => {
   const projectsDir = path.join(process.cwd(), 'projects')
@@ -8329,22 +8376,6 @@ exports.validate = (pathToFile) => {
   } catch (err) {
     console.error('Error reading config file: ', err);
   }
-}
-
-exports.getFilesChangedInLastCommit = () => {
-  const filesChanged = execSync('git diff --name-only HEAD HEAD~1');
-  return filesChanged.toString().split('\n');
-}
-
-exports.getModifiedFlags = (updatedFiles) => {
-  const flags = updatedFiles.filter(file => {
-      return isFlagConfigFile(file);
-    }).map(file => {
-      const flagConfig = readFlagConfig(file);
-      return flagConfig.key;
-    });
-
-  return [...new Set(flags)]; // Removes duplicates since each flag dir could have multiple changed files
 }
 
 /***/ }),
@@ -8530,7 +8561,8 @@ const fs = __nccwpck_require__(7147);
 const core = __nccwpck_require__(2186);
 const github = __nccwpck_require__(5438);
 
-const { traverse, validate, getFilesChangedInLastCommit, getModifiedFlags } = __nccwpck_require__(1002);
+const { traverse, validate } = __nccwpck_require__(1002);
+const { isFlagConfigFile, readFlagConfig, getFilesChangedInLastCommit, getModifiedFlags, getFlagModifications } = __nccwpck_require__(6254);
 
 try {
   const time = new Date().toTimeString();
@@ -8541,12 +8573,21 @@ try {
   core.setOutput('event', payload);
 
   // Export list of files changed in last commit
-  filesChanged = getFilesChangedInLastCommit();
+  const filesChanged = getFilesChangedInLastCommit();
   core.setOutput('filesChanged', filesChanged);
 
   // Export list of flags modified in last commit
-  flagsChanged = getModifiedFlags(filesChanged);
+  const flagsChanged = getModifiedFlags(filesChanged);
   core.setOutput('flagsChanged', flagsChanged); // remove duplicates in case flag changed in multiple environments
+
+  // Export flag modifications
+  const flagModifications = {};
+  filesChanged.filter(file => {
+    return isFlagConfigFile(file);
+  }).forEach(file => {
+    flagModifications[readFlagConfig(file).key] = getFlagModifications(file);
+  });
+  core.setOutput('flagModifications', flagModifications);
 
   // Do the validation here
   traverse(validate);
