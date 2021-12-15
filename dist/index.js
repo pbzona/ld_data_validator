@@ -8273,12 +8273,26 @@ function wrappy (fn, cb) {
 
 /***/ }),
 
+/***/ 6254:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+const fs = __nccwpck_require__(7147);
+
+exports.readFlagConfig = (path) => {
+  // Returns a json object ready to use
+  return JSON.parse(fs.readFileSync(path).toString());
+}
+
+/***/ }),
+
 /***/ 1002:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 const fs = __nccwpck_require__(7147);
 const path = __nccwpck_require__(1017);
 const { execSync } = __nccwpck_require__(2081);
+
+const { readFlagConfig } = __nccwpck_require__(6254);
 
 exports.traverse = (fn) => {
   const projectsDir = path.join(process.cwd(), 'projects')
@@ -8304,7 +8318,7 @@ exports.validate = (pathToFile) => {
   // Do some validation on the current file
   try {
     // Reads the file into an operable json object
-    const configJson = JSON.parse(fs.readFileSync(pathToFile).toString());
+    const configJson = readFlagConfig(pathToFile);
     console.log(configJson);
   } catch (err) {
     console.error('Error reading config file: ', err);
@@ -8318,12 +8332,11 @@ exports.getFilesChangedInLastCommit = () => {
 
 exports.getModifiedFlags = (updatedFiles) => {
   const flags = updatedFiles.map(file => {
-    const flagDir = path.parse(file).dir;
-    const pathComponents = flagDir.split('/');
-    return pathComponents[pathComponents.length - 1];
+    const flagConfig = readFlagConfig(file);
+    return flagConfig.key;
   });
 
-  return [...new Set(flags)]; // Removes duplicates since each flag dir could have multiple changed files
+  return [...new Set(flags)].filter(el => Boolean(el) !== false); // Removes duplicates since each flag dir could have multiple changed files, also filters out weird file stuff that might have not been parsed right
 }
 
 /***/ }),

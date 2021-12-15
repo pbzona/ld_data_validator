@@ -2,6 +2,8 @@ const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
 
+const { readFlagConfig } = require('./util');
+
 exports.traverse = (fn) => {
   const projectsDir = path.join(process.cwd(), 'projects')
   const projects = fs.readdirSync(projectsDir);
@@ -26,7 +28,7 @@ exports.validate = (pathToFile) => {
   // Do some validation on the current file
   try {
     // Reads the file into an operable json object
-    const configJson = JSON.parse(fs.readFileSync(pathToFile).toString());
+    const configJson = readFlagConfig(pathToFile);
     console.log(configJson);
   } catch (err) {
     console.error('Error reading config file: ', err);
@@ -40,10 +42,9 @@ exports.getFilesChangedInLastCommit = () => {
 
 exports.getModifiedFlags = (updatedFiles) => {
   const flags = updatedFiles.map(file => {
-    const flagDir = path.parse(file).dir;
-    const pathComponents = flagDir.split('/');
-    return pathComponents[pathComponents.length - 1];
+    const flagConfig = readFlagConfig(file);
+    return flagConfig.key;
   });
 
-  return [...new Set(flags)]; // Removes duplicates since each flag dir could have multiple changed files
+  return [...new Set(flags)].filter(el => Boolean(el) !== false); // Removes duplicates since each flag dir could have multiple changed files, also filters out weird file stuff that might have not been parsed right
 }
