@@ -5,12 +5,10 @@ outputs:
     description: 'Time the action ran'
   event:
     description: 'The event that triggered the action'
-  cwd:
-    description: 'Current working directory of the process'
-  contents:
-    description: 'Contents of the current working directory'
   filesChanged:
     description: 'List of files changed in the last commit'
+  flagsChanged:
+    description: 'List of flags changed in the last commit'
 runs:
   using: 'node16'
   main: 'dist/index.js'

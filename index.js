@@ -2,7 +2,7 @@ const fs = require('fs');
 const core = require('@actions/core');
 const github = require('@actions/github');
 
-const { traverse, validate, getFilesChangedInLastCommit } = require('./src/validate');
+const { traverse, validate, getFilesChangedInLastCommit, getModifiedFlags } = require('./src/validate');
 
 try {
   const time = new Date().toTimeString();
@@ -12,17 +12,13 @@ try {
   const payload = JSON.stringify(github.context.payload, undefined, 2);
   core.setOutput('event', payload);
 
-  // Export the cwd for debugging
-  const cwd = process.cwd();
-  core.setOutput('cwd', cwd);
-
-  // Export file structure for debugging
-  const ls = fs.readdirSync(cwd);
-  core.setOutput('contents', ls);
-
   // Export list of files changed in last commit
   filesChanged = getFilesChangedInLastCommit();
   core.setOutput('filesChanged', filesChanged);
+
+  // Export list of flags modified in last commit
+  flagsChanged = getModifiedFlags(filesChanged);
+  core.setOutput('flagsChanged', flagsChanged); // remove duplicates in case flag changed in multiple environments
 
   // Do the validation here
   traverse(validate);

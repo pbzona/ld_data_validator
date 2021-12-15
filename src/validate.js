@@ -37,3 +37,12 @@ exports.getFilesChangedInLastCommit = () => {
   const filesChanged = execSync('git diff --name-only HEAD HEAD~1');
   return filesChanged.toString().split('\n');
 }
+
+exports.getModifiedFlags = (updatedFiles) => {
+  const flags = updatedFiles.map(file => {
+    const flagDir = path.parse(file).dir;
+    return flagDir.split('/')[flagDir.length - 1];
+  });
+
+  return [...new Set(flags)]; // Removes duplicates since each flag dir could have multiple changed files
+}

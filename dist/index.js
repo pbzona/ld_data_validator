@@ -8316,6 +8316,15 @@ exports.getFilesChangedInLastCommit = () => {
   return filesChanged.toString().split('\n');
 }
 
+exports.getModifiedFlags = (updatedFiles) => {
+  const flags = updatedFiles.map(file => {
+    const flagDir = path.parse(file).dir;
+    return flagDir.split('/')[flagDir.length - 1];
+  });
+
+  return [...new Set(flags)]; // Removes duplicates since each flag dir could have multiple changed files
+}
+
 /***/ }),
 
 /***/ 2877:
@@ -8499,7 +8508,7 @@ const fs = __nccwpck_require__(7147);
 const core = __nccwpck_require__(2186);
 const github = __nccwpck_require__(5438);
 
-const { traverse, validate, getFilesChangedInLastCommit } = __nccwpck_require__(1002);
+const { traverse, validate, getFilesChangedInLastCommit, getModifiedFlags } = __nccwpck_require__(1002);
 
 try {
   const time = new Date().toTimeString();
@@ -8509,17 +8518,13 @@ try {
   const payload = JSON.stringify(github.context.payload, undefined, 2);
   core.setOutput('event', payload);
 
-  // Export the cwd for debugging
-  const cwd = process.cwd();
-  core.setOutput('cwd', cwd);
-
-  // Export file structure for debugging
-  const ls = fs.readdirSync(cwd);
-  core.setOutput('contents', ls);
-
   // Export list of files changed in last commit
   filesChanged = getFilesChangedInLastCommit();
   core.setOutput('filesChanged', filesChanged);
+
+  // Export list of flags modified in last commit
+  flagsChanged = getModifiedFlags(filesChanged);
+  core.setOutput('flagsChanged', flagsChanged); // remove duplicates in case flag changed in multiple environments
 
   // Do the validation here
   traverse(validate);
