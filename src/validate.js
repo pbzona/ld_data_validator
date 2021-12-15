@@ -1,7 +1,11 @@
 const fs = require('fs');
 const path = require('path');
+const { execSync } = require('child_process');
 
 exports.traverse = (fn) => {
+  // Debugging new function
+  getFilesChangedInLastCommit();
+  
   const projectsDir = path.join(process.cwd(), 'projects')
   const projects = fs.readdirSync(projectsDir);
   
@@ -29,5 +33,12 @@ exports.validate = (pathToFile) => {
     console.log(configJson);
   } catch (err) {
     console.error('Error reading config file: ', err);
+  }
+}
+
+exports.getFilesChangedInLastCommit = () => {
+  const filesChanged = execSync('git diff --name-only HEAD HEAD~1').toString().split('\n');
+  for (let file of filesChanged) {
+    console.log(file);
   }
 }

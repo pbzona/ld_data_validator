@@ -8278,8 +8278,12 @@ function wrappy (fn, cb) {
 
 const fs = __nccwpck_require__(7147);
 const path = __nccwpck_require__(1017);
+const { execSync } = __nccwpck_require__(2081);
 
 exports.traverse = (fn) => {
+  // Debugging new function
+  getFilesChangedInLastCommit();
+  
   const projectsDir = path.join(process.cwd(), 'projects')
   const projects = fs.readdirSync(projectsDir);
   
@@ -8310,6 +8314,13 @@ exports.validate = (pathToFile) => {
   }
 }
 
+exports.getFilesChangedInLastCommit = () => {
+  const filesChanged = execSync('git diff --name-only HEAD HEAD~1').toString().split('\n');
+  for (let file of filesChanged) {
+    console.log(file);
+  }
+}
+
 /***/ }),
 
 /***/ 2877:
@@ -8325,6 +8336,14 @@ module.exports = eval("require")("encoding");
 
 "use strict";
 module.exports = require("assert");
+
+/***/ }),
+
+/***/ 2081:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("child_process");
 
 /***/ }),
 
