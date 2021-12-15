@@ -41,7 +41,8 @@ exports.getFilesChangedInLastCommit = () => {
 exports.getModifiedFlags = (updatedFiles) => {
   const flags = updatedFiles.map(file => {
     const flagDir = path.parse(file).dir;
-    return flagDir.split('/')[flagDir.length - 1];
+    const pathComponents = flagDir.split('/');
+    return pathComponents[pathComponents.length - 1];
   });
 
   return [...new Set(flags)]; // Removes duplicates since each flag dir could have multiple changed files
