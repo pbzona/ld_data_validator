@@ -5,16 +5,16 @@ inputs:
     description: 'Number of commits in current push'
     required: true
 outputs:
-  time:
-    description: 'Time the action ran'
+  commitCount:
+    description: 'Number of commits in the push'
   event:
     description: 'The event that triggered the action'
   filesChanged:
-    description: 'List of files changed in the last commit'
+    description: 'List of files changed in the push'
   flagsChanged:
-    description: 'List of flags changed in the last commit'
+    description: 'List of flags changed in the push'
   flagModifications:
-    description: 'All flag modifications from this commit'
+    description: 'All flag modifications from this push'
 runs:
   using: 'node16'
   main: 'dist/index.js'

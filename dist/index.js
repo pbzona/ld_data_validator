@@ -8566,8 +8566,8 @@ const { traverse, validate } = __nccwpck_require__(1002);
 const { isFlagConfigFile, readFlagConfig, getFilesChangedInLastCommit, getModifiedFlags, getFlagModifications } = __nccwpck_require__(6254);
 
 try {
-  const time = new Date().toTimeString();
-  core.setOutput('time', time);
+  const commitCount = process.env.INPUT_COMMITCOUNT;
+  core.setOutput('commitCount', commitCount);
 
   // Get the JSON webhook payload for the event that triggered the workflow
   const payload = JSON.stringify(github.context.payload, undefined, 2);
