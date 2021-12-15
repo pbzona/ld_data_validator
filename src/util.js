@@ -24,7 +24,7 @@ const getModifiedFlags = (updatedFiles) => {
       return isFlagConfigFile(file);
     }).map(file => {
       // Can't rely on key here because env specific files don't have that field - need to parse path
-      const flagConfigDir = path.parse(file).dir;
+      const flagConfigDir = path.parse(file).dir.split('/');
       return flagConfigDir[flagConfigDir.length - 1];
     });
 
