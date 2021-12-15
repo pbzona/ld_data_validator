@@ -8276,11 +8276,17 @@ function wrappy (fn, cb) {
 /***/ 6254:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
+const path = __nccwpck_require__(1017);
 const fs = __nccwpck_require__(7147);
 
 exports.readFlagConfig = (path) => {
   // Returns a json object ready to use
   return JSON.parse(fs.readFileSync(path).toString());
+}
+
+// Tells whether a file is a flag configuration file or not
+exports.isFlagConfigFile = (filePath) => {
+  return path.parse(filePath).dir.split('/')[0] == 'projects'
 }
 
 /***/ }),
@@ -8292,7 +8298,7 @@ const fs = __nccwpck_require__(7147);
 const path = __nccwpck_require__(1017);
 const { execSync } = __nccwpck_require__(2081);
 
-const { readFlagConfig } = __nccwpck_require__(6254);
+const { readFlagConfig, isFlagConfigFile } = __nccwpck_require__(6254);
 
 exports.traverse = (fn) => {
   const projectsDir = path.join(process.cwd(), 'projects')
@@ -8331,12 +8337,14 @@ exports.getFilesChangedInLastCommit = () => {
 }
 
 exports.getModifiedFlags = (updatedFiles) => {
-  const flags = updatedFiles.map(file => {
-    const flagConfig = readFlagConfig(file);
-    return flagConfig.key;
-  });
+  const flags = updatedFiles.filter(file => {
+      return isFlagConfigFile(file);
+    }).map(file => {
+      const flagConfig = readFlagConfig(file);
+      return flagConfig.key;
+    });
 
-  return [...new Set(flags)].filter(el => Boolean(el) !== false); // Removes duplicates since each flag dir could have multiple changed files, also filters out weird file stuff that might have not been parsed right
+  return [...new Set(flags)]; // Removes duplicates since each flag dir could have multiple changed files
 }
 
 /***/ }),

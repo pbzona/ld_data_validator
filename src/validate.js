@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
 
-const { readFlagConfig } = require('./util');
+const { readFlagConfig, isFlagConfigFile } = require('./util');
 
 exports.traverse = (fn) => {
   const projectsDir = path.join(process.cwd(), 'projects')
@@ -41,10 +41,12 @@ exports.getFilesChangedInLastCommit = () => {
 }
 
 exports.getModifiedFlags = (updatedFiles) => {
-  const flags = updatedFiles.map(file => {
-    const flagConfig = readFlagConfig(file);
-    return flagConfig.key;
-  });
+  const flags = updatedFiles.filter(file => {
+      return isFlagConfigFile(file);
+    }).map(file => {
+      const flagConfig = readFlagConfig(file);
+      return flagConfig.key;
+    });
 
-  return [...new Set(flags)].filter(el => Boolean(el) !== false); // Removes duplicates since each flag dir could have multiple changed files, also filters out weird file stuff that might have not been parsed right
+  return [...new Set(flags)]; // Removes duplicates since each flag dir could have multiple changed files
 }
