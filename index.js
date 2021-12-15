@@ -2,8 +2,8 @@ const fs = require('fs');
 const core = require('@actions/core');
 const github = require('@actions/github');
 
-const { traverse, validate, getFilesChangedInLastCommit, getModifiedFlags, getFlagModifications } = require('./src/validate');
-const { isFlagConfigFile, readFlagConfig } = require('./src/util');
+const { traverse, validate } = require('./src/validate');
+const { isFlagConfigFile, readFlagConfig, getFilesChangedInLastCommit, getModifiedFlags, getFlagModifications } = require('./src/util');
 
 try {
   const time = new Date().toTimeString();
