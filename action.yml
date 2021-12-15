@@ -9,6 +9,8 @@ outputs:
     description: 'List of files changed in the last commit'
   flagsChanged:
     description: 'List of flags changed in the last commit'
+  flagModifications:
+    description: 'All flag modifications from this commit'
 runs:
   using: 'node16'
   main: 'dist/index.js'
