@@ -50,3 +50,22 @@ exports.getModifiedFlags = (updatedFiles) => {
 
   return [...new Set(flags)]; // Removes duplicates since each flag dir could have multiple changed files
 }
+
+exports.getFlagModifications = (pathToFile) => {
+  // Need branch to reset checkout as looking back will cause us to enter a detached HEAD state
+  const currentBranch = execSync('git rev-parse --abbrev-ref HEAD');
+
+  const modifications = {}
+  modifications.new = readFlagConfig(pathToFile);
+  execSync('git checkout HEAD~1');
+  
+  // What happens for newly created flag files?
+  if (fs.existsSync(pathToFile)) {
+    modifications.old = readFlagConfig(pathToFile)
+  } else {
+    modifications.old = {}
+  }
+
+  execSync(`git checkout ${currentBranch}`);
+  return modifications;
+}

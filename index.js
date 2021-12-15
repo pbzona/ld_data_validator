@@ -2,7 +2,8 @@ const fs = require('fs');
 const core = require('@actions/core');
 const github = require('@actions/github');
 
-const { traverse, validate, getFilesChangedInLastCommit, getModifiedFlags } = require('./src/validate');
+const { traverse, validate, getFilesChangedInLastCommit, getModifiedFlags, getFlagModifications } = require('./src/validate');
+const { isFlagConfigFile, readFlagConfig } = require('./src/util');
 
 try {
   const time = new Date().toTimeString();
@@ -13,12 +14,21 @@ try {
   core.setOutput('event', payload);
 
   // Export list of files changed in last commit
-  filesChanged = getFilesChangedInLastCommit();
+  const filesChanged = getFilesChangedInLastCommit();
   core.setOutput('filesChanged', filesChanged);
 
   // Export list of flags modified in last commit
-  flagsChanged = getModifiedFlags(filesChanged);
+  const flagsChanged = getModifiedFlags(filesChanged);
   core.setOutput('flagsChanged', flagsChanged); // remove duplicates in case flag changed in multiple environments
+
+  // Export flag modifications
+  const flagModifications = {};
+  filesChanged.filter(file => {
+    return isFlagConfigFile(file);
+  }).forEach(file => {
+    flagModifications[readFlagConfig(file).key] = getFlagModifications(file);
+  });
+  core.setOutput('flagModifications', flagModifications);
 
   // Do the validation here
   traverse(validate);
