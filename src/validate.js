@@ -3,9 +3,6 @@ const path = require('path');
 const { execSync } = require('child_process');
 
 exports.traverse = (fn) => {
-  // Debugging new function
-  getFilesChangedInLastCommit();
-  
   const projectsDir = path.join(process.cwd(), 'projects')
   const projects = fs.readdirSync(projectsDir);
   

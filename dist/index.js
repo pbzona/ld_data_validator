@@ -8281,9 +8281,6 @@ const path = __nccwpck_require__(1017);
 const { execSync } = __nccwpck_require__(2081);
 
 exports.traverse = (fn) => {
-  // Debugging new function
-  getFilesChangedInLastCommit();
-  
   const projectsDir = path.join(process.cwd(), 'projects')
   const projects = fs.readdirSync(projectsDir);
   
