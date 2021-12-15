@@ -8301,8 +8301,9 @@ const getModifiedFlags = (updatedFiles) => {
   const flags = updatedFiles.filter(file => {
       return isFlagConfigFile(file);
     }).map(file => {
-      const flagConfig = readFlagConfig(file);
-      return flagConfig.key;
+      // Can't rely on key here because env specific files don't have that field - need to parse path
+      const flagConfigDir = path.parse(file).dir.split('/');
+      return flagConfigDir[flagConfigDir.length - 1];
     });
 
   return [...new Set(flags)]; // Removes duplicates since each flag dir could have multiple changed files
