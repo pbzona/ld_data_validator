@@ -19,7 +19,7 @@ const getFilesChangedInLastCommit = () => {
 }
 
 const getFlagKeyForFile = (pathToFile) => {
-  const flagConfigDir = path.parse(file).dir.split('/');
+  const flagConfigDir = path.parse(pathToFile).dir.split('/');
   return flagConfigDir[flagConfigDir.length - 1];
 }
 
