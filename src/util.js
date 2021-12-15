@@ -14,7 +14,7 @@ const isFlagConfigFile = (filePath) => {
 
 // Returns array of files that were changed in this commit
 const getFilesChangedInLastCommit = () => {
-  const filesChanged = execSync('git diff --name-only HEAD HEAD~1');
+  const filesChanged = execSync(`git diff --name-only HEAD HEAD~${process.env.INPUT_COMMITCOUNT - 1}`);
   return filesChanged.toString().split('\n');
 }
 
@@ -37,7 +37,7 @@ const getFlagModifications = (pathToFile) => {
 
   const modifications = {}
   modifications.new = readFlagConfig(pathToFile);
-  execSync('git checkout HEAD~1');
+  execSync(`git checkout HEAD~${process.env.INPUT_COMMITCOUNT - 1}`);
   
   // What happens for newly created flag files?
   if (fs.existsSync(pathToFile)) {

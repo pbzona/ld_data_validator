@@ -1,5 +1,9 @@
 name: 'LD Data Validator'
 description: 'Validate LD data before syncing'
+inputs:
+  commitCount:
+    description: 'Number of commits in current push'
+    required: true
 outputs:
   time:
     description: 'Time the action ran'
