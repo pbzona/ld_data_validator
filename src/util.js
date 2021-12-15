@@ -18,14 +18,17 @@ const getFilesChangedInLastCommit = () => {
   return filesChanged.toString().split('\n');
 }
 
+const getFlagKeyForFile = (pathToFile) => {
+  const flagConfigDir = path.parse(file).dir.split('/');
+  return flagConfigDir[flagConfigDir.length - 1];
+}
+
 // Return array of keys of flags that were changed in this commit
 const getModifiedFlags = (updatedFiles) => {
   const flags = updatedFiles.filter(file => {
       return isFlagConfigFile(file);
     }).map(file => {
-      // Can't rely on key here because env specific files don't have that field - need to parse path
-      const flagConfigDir = path.parse(file).dir.split('/');
-      return flagConfigDir[flagConfigDir.length - 1];
+      return getFlagKeyForFile(file);
     });
 
   return [...new Set(flags)]; // Removes duplicates since each flag dir could have multiple changed files
@@ -56,6 +59,7 @@ module.exports = {
   readFlagConfig,
   isFlagConfigFile,
   getFilesChangedInLastCommit,
+  getFlagKeyForFile,
   getModifiedFlags,
   getFlagModifications
 }
