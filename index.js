@@ -4,6 +4,7 @@ const github = require('@actions/github');
 const { traverse, validate } = require('./src/validate');
 const { getFilesChangedInLastCommit, getModifiedFlags, getFlagModifications } = require('./src/util');
 const { isFlagConfigFile, parseFlagKey, parseFlagEnv } = require('./src/parser');
+const { makeSyncRequest } = require('./src/sync');
 
 try {
   const commitCount = process.env.INPUT_COMMITCOUNT;
@@ -33,6 +34,23 @@ try {
 
   // Do the validation here
   traverse(validate);
+
+  // Try to sync changes to LD
+  if (flagsChanged.length > 0) {
+    for (let flag of flagsChanged) {
+      const modKey = `${flag.key}_${flag.env}`;
+      const apiResponse = makeSyncRequest(
+        flag.project,
+        flag.env,
+        flag.key,
+        flagModifications[modKey].new,
+        flagModifications[modKey].old
+        );
+        
+        console.log(apiResponse);
+      }
+    }
+
 } catch(err) {
   core.setFailed(err.message);
 }
