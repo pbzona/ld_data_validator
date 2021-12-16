@@ -11307,7 +11307,7 @@ function wrappy (fn, cb) {
 
 exports.automationUser = {
   email: '',
-  name: '',
+  name: 'LD2Git Updater',
   username: ''
 }
 

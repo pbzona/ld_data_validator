@@ -2,6 +2,6 @@
 
 exports.automationUser = {
   email: '',
-  name: '',
+  name: 'LD2Git Updater',
   username: ''
 }
