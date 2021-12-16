@@ -11472,9 +11472,9 @@ exports.validate = (pathToFile) => {
     //console.log(configJson);
     
     // Try to parse - will fail if invalid json
-    JSON.parse(configJson)
+    // JSON.parse(configJson)
   } catch (err) {
-    console.error('Error reading config file: ', err);
+    console.error(`Error reading config file (${pathToFile}): ${err}`);
   }
 }
 
