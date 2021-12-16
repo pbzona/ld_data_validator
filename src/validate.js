@@ -8,15 +8,15 @@ exports.traverse = (fn) => {
   const projects = fs.readdirSync(projectsDir);
   
   for (let project of projects) {
-    console.log('PROJECT:', project);
+    //console.log('PROJECT:', project);
     const flags = fs.readdirSync(path.join(projectsDir, project, 'flags'));
     for (let flag of flags) {
-      console.log('FLAG:', flag);
+      //console.log('FLAG:', flag);
       const configs = fs.readdirSync(path.join(projectsDir, project, 'flags', flag));
       for (let config of configs) {
-        console.log('CONFIG', config);
+        //console.log('CONFIG', config);
         const pathToConfigFile = path.join(projectsDir, project, 'flags', flag, config);
-        console.log(pathToConfigFile);
+        //console.log(pathToConfigFile);
         fn(pathToConfigFile);
       }
     }
@@ -28,7 +28,10 @@ exports.validate = (pathToFile) => {
   try {
     // Reads the file into an operable json object
     const configJson = readFlagConfig(pathToFile);
-    console.log(configJson);
+    //console.log(configJson);
+    
+    // Try to parse - will fail if invalid json
+    JSON.parse(configJson)
   } catch (err) {
     console.error('Error reading config file: ', err);
   }
