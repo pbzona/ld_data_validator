@@ -11353,7 +11353,7 @@ module.exports = {
 const axios = __nccwpck_require__(6545);
 
 // Make this an action input
-const baseUrl = 'https://gonfalon-3001-gonfalon-pr-15379.launchdarkly.okteto.dev';
+const baseUrl = process.env.INPUT_BASEURL
 const endpoint = (project, env, flag) => `${baseUrl}/api/v2/projects/${project}/environments/${env}/flags/${flag}/sync`;
 
 const makeSyncRequest = async (project, env, flag, newConfig, oldConfig) => {
@@ -11484,11 +11484,11 @@ exports.traverse = (fn) => {
 exports.validate = (event) => {
   // Validate that the current push did not come from an automated user
   try {
+    console.log('Commmits:', event.commits);
+
     for (let commit of event.commits) {
       let committerIsAutomated = (
-        commit.author.email === automationUser.email &&
-        commit.author.name === automationUser.name &&
-        commit.author.username === automationUser.username
+        commit.author.name === automationUser.name
       )
 
       if (committerIsAutomated) {

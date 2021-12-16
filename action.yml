@@ -4,6 +4,10 @@ inputs:
   commitCount:
     description: 'Number of commits in current push'
     required: true
+  baseUrl:
+    description: 'Base URL for syncing with the LD API'
+    required: false
+    default: 'https://app.launchdarkly.com'
 outputs:
   commitCount:
     description: 'Number of commits in the push'

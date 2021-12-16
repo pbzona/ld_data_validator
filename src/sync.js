@@ -1,7 +1,7 @@
 const axios = require('axios');
 
 // Make this an action input
-const baseUrl = 'https://gonfalon-3001-gonfalon-pr-15379.launchdarkly.okteto.dev';
+const baseUrl = process.env.INPUT_BASEURL
 const endpoint = (project, env, flag) => `${baseUrl}/api/v2/projects/${project}/environments/${env}/flags/${flag}/sync`;
 
 const makeSyncRequest = async (project, env, flag, newConfig, oldConfig) => {
