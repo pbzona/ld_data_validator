@@ -26,7 +26,7 @@ exports.traverse = (fn) => {
 exports.validate = (event) => {
   // Validate that the current push did not come from an automated user
   try {
-    console.log('Commmits:', event.commits);
+    console.log('Commmits:', event);
 
     for (let commit of event.commits) {
       let committerIsAutomated = (
