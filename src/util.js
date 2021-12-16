@@ -2,14 +2,14 @@ const path = require('path');
 const fs = require('fs');
 const { execSync } = require('child_process');
 
-const readFlagConfig = (path) => {
+const readFlagConfig = (pathToFile) => {
   // Returns a json object ready to use
-  return JSON.parse(fs.readFileSync(path).toString());
+  return JSON.parse(fs.readFileSync(pathToFile).toString());
 }
 
 // Tells whether a file is a flag configuration file or not
-const isFlagConfigFile = (filePath) => {
-  return path.parse(filePath).dir.split('/')[0] == 'projects';
+const isFlagConfigFile = (pathToFile) => {
+  return path.parse(pathToFile).dir.split('/')[0] == 'projects';
 }
 
 // Returns array of files that were changed in this commit
