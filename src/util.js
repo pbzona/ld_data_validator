@@ -2,14 +2,11 @@ const path = require('path');
 const fs = require('fs');
 const { execSync } = require('child_process');
 
+const { isFlagConfigFile, parseFlagKey, parseFlagEnv, parseFlagProject } = require('./parser');
+
 const readFlagConfig = (pathToFile) => {
   // Returns a json object ready to use
   return JSON.parse(fs.readFileSync(pathToFile).toString());
-}
-
-// Tells whether a file is a flag configuration file or not
-const isFlagConfigFile = (pathToFile) => {
-  return path.parse(pathToFile).dir.split('/')[0] == 'projects';
 }
 
 // Returns array of files that were changed in this commit
@@ -18,20 +15,19 @@ const getFilesChangedInLastCommit = () => {
   return filesChanged.toString().split('\n');
 }
 
-const getFlagKeyForFile = (pathToFile) => {
-  const flagConfigDir = path.parse(pathToFile).dir.split('/');
-  return flagConfigDir[flagConfigDir.length - 1];
-}
-
 // Return array of keys of flags that were changed in this commit
 const getModifiedFlags = (updatedFiles) => {
   const flags = updatedFiles.filter(file => {
       return isFlagConfigFile(file);
     }).map(file => {
-      return getFlagKeyForFile(file);
+      return {
+        key: parseFlagKey(file),
+        env: parseFlagEnv(file),
+        project: parseFlagProject(file)
+      };
     });
 
-  return [...new Set(flags)]; // Removes duplicates since each flag dir could have multiple changed files
+  return flags;
 }
 
 // Returns an object
@@ -57,9 +53,7 @@ const getFlagModifications = (pathToFile) => {
 
 module.exports = {
   readFlagConfig,
-  isFlagConfigFile,
   getFilesChangedInLastCommit,
-  getFlagKeyForFile,
   getModifiedFlags,
   getFlagModifications
 }
