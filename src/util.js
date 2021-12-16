@@ -23,7 +23,8 @@ const getModifiedFlags = (updatedFiles) => {
       return {
         key: parseFlagKey(modifiedFlagFile),
         env: parseFlagEnv(modifiedFlagFile),
-        project: parseFlagProject(modifiedFlagFile)
+        project: parseFlagProject(modifiedFlagFile),
+        configFile: modifiedFlagFile
       };
     });
 

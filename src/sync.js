@@ -22,7 +22,7 @@ const makeSyncRequest = async (project, env, flag, newConfig, oldConfig) => {
       'LD-API-Version': 'beta'
     }
   });
-} 
+}
 
 module.exports = {
   makeSyncRequest
