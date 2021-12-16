@@ -34,9 +34,11 @@ exports.validate = (commits) => {
       )
 
       if (committerIsAutomated) {
+        console.log('One of these commits came from LD2Git - exiting now');
+        console.warn('If you have somehow included human-generated commits in this push, revert them and push again');
         process.exit(0);
       } else {
-        console.log('Validation passed');
+        console.log(`Validation passed for: ${commit.author.name}`);
       }
     }
 

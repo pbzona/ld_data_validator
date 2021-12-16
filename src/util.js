@@ -38,7 +38,7 @@ const getFlagModifications = (pathToFile) => {
 
   const modifications = {}
   modifications.new = readFlagConfig(pathToFile);
-  execSync(`git checkout HEAD~${process.env.INPUT_COMMITCOUNT - 1}`);
+  execSync(`git checkout HEAD~${process.env.INPUT_COMMITCOUNT - 1} > /dev/null 2>&1`);
   
   // What happens for newly created flag files?
   if (fs.existsSync(pathToFile)) {
@@ -48,7 +48,7 @@ const getFlagModifications = (pathToFile) => {
   }
 
   // Go back to current branch before returning result
-  execSync(`git checkout ${currentBranch}`);
+  execSync(`git checkout ${currentBranch} > /dev/null 2>&1`);
   return modifications;
 }
 

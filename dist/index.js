@@ -11430,7 +11430,7 @@ const getFlagModifications = (pathToFile) => {
 
   const modifications = {}
   modifications.new = readFlagConfig(pathToFile);
-  execSync(`git checkout HEAD~${process.env.INPUT_COMMITCOUNT - 1}`);
+  execSync(`git checkout HEAD~${process.env.INPUT_COMMITCOUNT - 1} > /dev/null 2>&1`);
   
   // What happens for newly created flag files?
   if (fs.existsSync(pathToFile)) {
@@ -11440,7 +11440,7 @@ const getFlagModifications = (pathToFile) => {
   }
 
   // Go back to current branch before returning result
-  execSync(`git checkout ${currentBranch}`);
+  execSync(`git checkout ${currentBranch} > /dev/null 2>&1`);
   return modifications;
 }
 
@@ -11492,9 +11492,11 @@ exports.validate = (commits) => {
       )
 
       if (committerIsAutomated) {
+        console.log('One of these commits came from LD2Git - exiting now');
+        console.warn('If you have somehow included human-generated commits in this push, revert them and push again');
         process.exit(0);
       } else {
-        console.log('Validation passed');
+        console.log(`Validation passed for: ${commit.author.name}`);
       }
     }
 
