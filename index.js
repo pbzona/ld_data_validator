@@ -4,7 +4,7 @@ const github = require('@actions/github');
 
 const { traverse, validate } = require('./src/validate');
 const { isFlagConfigFile, getFilesChangedInLastCommit, getModifiedFlags, getFlagModifications } = require('./src/util');
-const { parseFlagKey } = require('./src/parser');
+const { parseFlagKey, parseFlagEnv } = require('./src/parser');
 
 try {
   const commitCount = process.env.INPUT_COMMITCOUNT;
@@ -24,10 +24,11 @@ try {
 
   // Export flag modifications
   const flagModifications = {};
-  filesChanged.filter(file => {
-    return isFlagConfigFile(file);
-  }).forEach(file => {
-    flagModifications[parseFlagKey(file)] = getFlagModifications(file);
+  filesChanged.filter(changedFile => {
+    return isFlagConfigFile(changedFile);
+  }).forEach(modifiedFile => {
+    const objKey = parseFlagKey(modifiedFile) + "_" + parseFlagEnv(modifiedFile);
+    flagModifications[objKey] = getFlagModifications(modifiedFile);
   });
   core.setOutput('flagModifications', flagModifications);
 

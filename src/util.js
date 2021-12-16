@@ -17,13 +17,13 @@ const getFilesChangedInLastCommit = () => {
 
 // Return array of keys of flags that were changed in this commit
 const getModifiedFlags = (updatedFiles) => {
-  const flags = updatedFiles.filter(file => {
-      return isFlagConfigFile(file);
-    }).map(file => {
+  const flags = updatedFiles.filter(updatedFile => {
+      return isFlagConfigFile(updatedFile);
+    }).map(modifiedFlagFile => {
       return {
-        key: parseFlagKey(file),
-        env: parseFlagEnv(file),
-        project: parseFlagProject(file)
+        key: parseFlagKey(modifiedFlagFile),
+        env: parseFlagEnv(modifiedFlagFile),
+        project: parseFlagProject(modifiedFlagFile)
       };
     });
 
