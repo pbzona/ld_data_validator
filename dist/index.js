@@ -11356,7 +11356,7 @@ const axios = __nccwpck_require__(6545);
 const baseUrl = 'https://gonfalon-3001-gonfalon-pr-15379.launchdarkly.okteto.dev';
 const endpoint = (project, env, flag) => `${baseUrl}/api/v2/projects/${project}/environments/${env}/flags/${flag}/sync`;
 
-const makeSyncRequest = (project, env, flag, newConfig, oldConfig) => {
+const makeSyncRequest = async (project, env, flag, newConfig, oldConfig) => {
   const data = {
     commitMessage: 'This is a test', // Change this obviously
     preview: false,
@@ -11364,7 +11364,7 @@ const makeSyncRequest = (project, env, flag, newConfig, oldConfig) => {
     oldConfig
   };
   
-  return axios({
+  const response = await axios({
     method: 'POST',
     url: endpoint(project, env, flag),
     data,
@@ -11374,6 +11374,7 @@ const makeSyncRequest = (project, env, flag, newConfig, oldConfig) => {
       'LD-API-Version': 'beta'
     }
   });
+  return response;
 }
 
 module.exports = {
@@ -11729,7 +11730,7 @@ try {
     if (flagsChanged.length > 0) {
       for (let flag of flagsChanged) {
         const modKey = `${flag.key}_${flag.env}`;
-        const apiResponse = await makeSyncRequest(
+        const apiResponse = makeSyncRequest(
           flag.project,
           flag.env,
           flag.key,

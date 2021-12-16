@@ -41,7 +41,7 @@ try {
     if (flagsChanged.length > 0) {
       for (let flag of flagsChanged) {
         const modKey = `${flag.key}_${flag.env}`;
-        const apiResponse = await makeSyncRequest(
+        const apiResponse = makeSyncRequest(
           flag.project,
           flag.env,
           flag.key,
