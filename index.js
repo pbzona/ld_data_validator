@@ -17,7 +17,7 @@ try {
     core.setOutput('event', payload);
     
     // Do the validation here
-    validate(payload.commits);
+    validate(JSON.parse(payload).commits);
     
     // Export list of files changed in last commit
     const filesChanged = getFilesChangedInLastCommit();
