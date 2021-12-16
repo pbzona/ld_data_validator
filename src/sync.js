@@ -11,8 +11,8 @@ const makeSyncRequest = async (project, env, flag, newConfig, oldConfig) => {
     newConfig,
     oldConfig
   };
-  
-  const response = await axios({
+
+  const config = {
     method: 'POST',
     url: endpoint(project, env, flag),
     data,
@@ -21,7 +21,10 @@ const makeSyncRequest = async (project, env, flag, newConfig, oldConfig) => {
       'Content-Type': 'application/json',
       'LD-API-Version': 'beta'
     }
-  });
+  }
+  console.log(config);
+  
+  const response = await axios(config);
   return response;
 }
 
