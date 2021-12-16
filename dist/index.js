@@ -11300,6 +11300,19 @@ function wrappy (fn, cb) {
 
 /***/ }),
 
+/***/ 8050:
+/***/ ((__unused_webpack_module, exports) => {
+
+// Define the user that will make pushes from LD2git
+
+exports.automationUser = {
+  email: '',
+  name: '',
+  username: ''
+}
+
+/***/ }),
+
 /***/ 1809:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
@@ -11442,7 +11455,7 @@ module.exports = {
 const fs = __nccwpck_require__(7147);
 const path = __nccwpck_require__(1017);
 
-const { readFlagConfig } = __nccwpck_require__(6254);
+const { automationUser } = __nccwpck_require__(8050);
 
 exports.traverse = (fn) => {
   const projectsDir = path.join(process.cwd(), 'projects')
@@ -11464,15 +11477,21 @@ exports.traverse = (fn) => {
   }
 }
 
-exports.validate = (pathToFile) => {
-  // Do some validation on the current file
+exports.validate = (event) => {
+  // Validate that the current push did not come from an automated user
   try {
-    // Reads the file into an operable json object
-    const configJson = readFlagConfig(pathToFile);
-    //console.log(configJson);
-    
-    // Try to parse - will fail if invalid json
-    // JSON.parse(configJson)
+    for (let commit of event.commits) {
+      let committerIsAutomated = (
+        commit.author.email === automationUser.email &&
+        commit.author.name === automationUser.name &&
+        commit.author.username === automationUser.username
+      )
+
+      if (committerIsAutomated) {
+        process.exit(0);
+      }
+    }
+
   } catch (err) {
     console.error(`Error reading config file (${pathToFile}): ${err}`);
   }
@@ -11681,6 +11700,9 @@ try {
   const payload = JSON.stringify(github.context.payload, undefined, 2);
   core.setOutput('event', payload);
 
+  // Do the validation here
+  validate(payload);
+
   // Export list of files changed in last commit
   const filesChanged = getFilesChangedInLastCommit();
   core.setOutput('filesChanged', filesChanged);
@@ -11698,9 +11720,6 @@ try {
     flagModifications[objKey] = getFlagModifications(modifiedFile);
   });
   core.setOutput('flagModifications', flagModifications);
-
-  // Do the validation here
-  traverse(validate);
 
   // Try to sync changes to LD
   if (flagsChanged.length > 0) {
