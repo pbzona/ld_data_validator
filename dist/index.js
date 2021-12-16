@@ -8273,6 +8273,40 @@ function wrappy (fn, cb) {
 
 /***/ }),
 
+/***/ 1809:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+const path = __nccwpck_require__(1017);
+
+// Tells whether a file is a flag configuration file or not
+const isFlagConfigFile = (pathToFile) => {
+  return path.parse(pathToFile).dir.split('/')[0] == 'projects';
+}
+
+const parseFlagKey = (pathToFile) => {
+  const flagConfigDir = path.parse(pathToFile).dir.split('/');
+  return flagConfigDir[flagConfigDir.length - 1];
+}
+
+const parseFlagEnv = (pathToFile) => {
+  const flagConfigName = path.parse(pathToFile).name
+  return flagConfigName == 'core-metadata' ? 'global' : flagConfigName;
+}
+
+const parseFlagProject = (pathToFile) => {
+  return path.parse(pathToFile).dir.split('/')[1];
+}
+
+module.exports = {
+  isFlagConfigFile,
+  parseFlagKey,
+  parseFlagEnv,
+  parseFlagProject,
+}
+
+
+/***/ }),
+
 /***/ 6254:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
@@ -8280,14 +8314,11 @@ const path = __nccwpck_require__(1017);
 const fs = __nccwpck_require__(7147);
 const { execSync } = __nccwpck_require__(2081);
 
-const readFlagConfig = (path) => {
-  // Returns a json object ready to use
-  return JSON.parse(fs.readFileSync(path).toString());
-}
+const { isFlagConfigFile, parseFlagKey, parseFlagEnv, parseFlagProject } = __nccwpck_require__(1809);
 
-// Tells whether a file is a flag configuration file or not
-const isFlagConfigFile = (filePath) => {
-  return path.parse(filePath).dir.split('/')[0] == 'projects';
+const readFlagConfig = (pathToFile) => {
+  // Returns a json object ready to use
+  return JSON.parse(fs.readFileSync(pathToFile).toString());
 }
 
 // Returns array of files that were changed in this commit
@@ -8296,20 +8327,19 @@ const getFilesChangedInLastCommit = () => {
   return filesChanged.toString().split('\n');
 }
 
-const getFlagKeyForFile = (pathToFile) => {
-  const flagConfigDir = path.parse(file).dir.split('/');
-  return flagConfigDir[flagConfigDir.length - 1];
-}
-
 // Return array of keys of flags that were changed in this commit
 const getModifiedFlags = (updatedFiles) => {
-  const flags = updatedFiles.filter(file => {
-      return isFlagConfigFile(file);
-    }).map(file => {
-      return getFlagKeyForFile(file);
+  const flags = updatedFiles.filter(updatedFile => {
+      return isFlagConfigFile(updatedFile);
+    }).map(modifiedFlagFile => {
+      return {
+        key: parseFlagKey(modifiedFlagFile),
+        env: parseFlagEnv(modifiedFlagFile),
+        project: parseFlagProject(modifiedFlagFile)
+      };
     });
 
-  return [...new Set(flags)]; // Removes duplicates since each flag dir could have multiple changed files
+  return flags;
 }
 
 // Returns an object
@@ -8335,9 +8365,7 @@ const getFlagModifications = (pathToFile) => {
 
 module.exports = {
   readFlagConfig,
-  isFlagConfigFile,
   getFilesChangedInLastCommit,
-  getFlagKeyForFile,
   getModifiedFlags,
   getFlagModifications
 }
@@ -8567,7 +8595,8 @@ const core = __nccwpck_require__(2186);
 const github = __nccwpck_require__(5438);
 
 const { traverse, validate } = __nccwpck_require__(1002);
-const { isFlagConfigFile, readFlagConfig, getFilesChangedInLastCommit, getModifiedFlags, getFlagModifications, getFlagKeyForFile } = __nccwpck_require__(6254);
+const { isFlagConfigFile, getFilesChangedInLastCommit, getModifiedFlags, getFlagModifications } = __nccwpck_require__(6254);
+const { parseFlagKey, parseFlagEnv } = __nccwpck_require__(1809);
 
 try {
   const commitCount = process.env.INPUT_COMMITCOUNT;
@@ -8587,10 +8616,11 @@ try {
 
   // Export flag modifications
   const flagModifications = {};
-  filesChanged.filter(file => {
-    return isFlagConfigFile(file);
-  }).forEach(file => {
-    flagModifications[getFlagKeyForFile(file)] = getFlagModifications(file);
+  filesChanged.filter(changedFile => {
+    return isFlagConfigFile(changedFile);
+  }).forEach(modifiedFile => {
+    const objKey = parseFlagKey(modifiedFile) + "_" + parseFlagEnv(modifiedFile);
+    flagModifications[objKey] = getFlagModifications(modifiedFile);
   });
   core.setOutput('flagModifications', flagModifications);
 
