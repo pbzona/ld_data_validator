@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const { readFlagConfig } = require('./util');
+const { automationUser } = require('./automationUser');
 
 exports.traverse = (fn) => {
   const projectsDir = path.join(process.cwd(), 'projects')
@@ -23,15 +23,21 @@ exports.traverse = (fn) => {
   }
 }
 
-exports.validate = (pathToFile) => {
-  // Do some validation on the current file
+exports.validate = (event) => {
+  // Validate that the current push did not come from an automated user
   try {
-    // Reads the file into an operable json object
-    const configJson = readFlagConfig(pathToFile);
-    //console.log(configJson);
-    
-    // Try to parse - will fail if invalid json
-    // JSON.parse(configJson)
+    for (let commit of event.commits) {
+      let committerIsAutomated = (
+        commit.author.email === automationUser.email &&
+        commit.author.name === automationUser.name &&
+        commit.author.username === automationUser.username
+      )
+
+      if (committerIsAutomated) {
+        process.exit(0);
+      }
+    }
+
   } catch (err) {
     console.error(`Error reading config file (${pathToFile}): ${err}`);
   }

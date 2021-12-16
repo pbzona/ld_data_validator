@@ -14,6 +14,9 @@ try {
   const payload = JSON.stringify(github.context.payload, undefined, 2);
   core.setOutput('event', payload);
 
+  // Do the validation here
+  validate(payload);
+
   // Export list of files changed in last commit
   const filesChanged = getFilesChangedInLastCommit();
   core.setOutput('filesChanged', filesChanged);
@@ -31,9 +34,6 @@ try {
     flagModifications[objKey] = getFlagModifications(modifiedFile);
   });
   core.setOutput('flagModifications', flagModifications);
-
-  // Do the validation here
-  traverse(validate);
 
   // Try to sync changes to LD
   if (flagsChanged.length > 0) {
