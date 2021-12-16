@@ -35,10 +35,12 @@ exports.validate = (event) => {
 
       if (committerIsAutomated) {
         process.exit(0);
+      } else {
+        console.log('Validation passed');
       }
     }
 
   } catch (err) {
-    console.error(`Error reading config file (${pathToFile}): ${err}`);
+    console.error(`Error: ${err}`);
   }
 }
