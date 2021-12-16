@@ -19,7 +19,7 @@ try {
 
   // Export list of flags modified in last commit
   const flagsChanged = getModifiedFlags(filesChanged);
-  core.setOutput('flagsChanged', flagsChanged); // remove duplicates in case flag changed in multiple environments
+  core.setOutput('flagsChanged', flagsChanged);
 
   // Export flag modifications
   const flagModifications = {};
