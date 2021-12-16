@@ -8590,13 +8590,12 @@ module.exports = JSON.parse('[[[0,44],"disallowed_STD3_valid"],[[45,46],"valid"]
 var __webpack_exports__ = {};
 // This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
 (() => {
-const fs = __nccwpck_require__(7147);
 const core = __nccwpck_require__(2186);
 const github = __nccwpck_require__(5438);
 
 const { traverse, validate } = __nccwpck_require__(1002);
-const { isFlagConfigFile, getFilesChangedInLastCommit, getModifiedFlags, getFlagModifications } = __nccwpck_require__(6254);
-const { parseFlagKey, parseFlagEnv } = __nccwpck_require__(1809);
+const { getFilesChangedInLastCommit, getModifiedFlags, getFlagModifications } = __nccwpck_require__(6254);
+const { isFlagConfigFile, parseFlagKey, parseFlagEnv } = __nccwpck_require__(1809);
 
 try {
   const commitCount = process.env.INPUT_COMMITCOUNT;

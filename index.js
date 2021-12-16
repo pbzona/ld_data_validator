@@ -1,10 +1,9 @@
-const fs = require('fs');
 const core = require('@actions/core');
 const github = require('@actions/github');
 
 const { traverse, validate } = require('./src/validate');
-const { isFlagConfigFile, getFilesChangedInLastCommit, getModifiedFlags, getFlagModifications } = require('./src/util');
-const { parseFlagKey, parseFlagEnv } = require('./src/parser');
+const { getFilesChangedInLastCommit, getModifiedFlags, getFlagModifications } = require('./src/util');
+const { isFlagConfigFile, parseFlagKey, parseFlagEnv } = require('./src/parser');
 
 try {
   const commitCount = process.env.INPUT_COMMITCOUNT;
