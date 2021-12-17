@@ -11332,7 +11332,7 @@ const parseFlagEnv = (pathToFile) => {
   const flagConfigName = path.parse(pathToFile).name;
   let flagEnv;
   if ((flagConfigName == 'core-metadata') || (flagConfigName == 'flag')) {
-    flagEnv = 'global'; // early return
+    flagEnv = 'production'; // early return; and "global" doesn't work, so this is hacky
   } else {
     flagEnv = flagConfigName.replace("env-","");
   }
