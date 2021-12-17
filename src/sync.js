@@ -46,7 +46,7 @@ const makeSyncRequest = async (project, env, flag, newConfig, oldConfig) => {
   });
 
   if (errorLogs.length > 0) {
-    errorLogs.push(response.data);
+    errorLogs.push(response);
     core.setFailed(errorLogs.map(JSON.stringify).join('\n\n'));
   }
   return response;
