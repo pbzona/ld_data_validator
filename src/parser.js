@@ -12,7 +12,7 @@ const parseFlagKey = (pathToFile) => {
 
 const parseFlagEnv = (pathToFile) => {
   const flagConfigName = path.parse(pathToFile).name
-  return flagConfigName == 'core-metadata' ? 'global' : flagConfigName;
+  return flagConfigName == 'core-metadata' ? 'global' : flagConfigName.replace("env-","");
 }
 
 const parseFlagProject = (pathToFile) => {
