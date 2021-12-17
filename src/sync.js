@@ -1,4 +1,5 @@
 const axios = require('axios');
+const core = require('@actions/core');
 
 // Make this an action input
 const baseUrl = process.env.INPUT_BASEURL
@@ -25,22 +26,23 @@ const makeSyncRequest = async (project, env, flag, newConfig, oldConfig) => {
   console.log(config);
   
   const response = await axios(config).catch(function (error) {
+    let errorLogs = [];
     if (error.response) {
       // The request was made and the server responded with a status code
       // that falls out of the range of 2xx
-      console.log("Server responded with an error:");
-      console.log(error.response.data);
-      console.log(error.response.status);
-      console.log(error.response.headers);
+      errorLogs.push("Server responded with an error",
+                      error.response.data, 
+                      error.response.status, 
+                      error.response.headers);
     } else if (error.request) {
       // The request was made but no response was received
-      console.log("No response received for this request:");
-      console.log(error.request);
+      errorLogs.push("No response received for this request:", error.request);
     } else {
       // Something happened in setting up the request that triggered an Error
-      console.log('Error', error.message);
+      errorLogs.push('Error', error.message);
     }
-    console.log(error.config);
+    errorLogs.push(error.config);
+    core.SetFailed(errorLogs.join('\n\n'));
   });
   return response;
 }
