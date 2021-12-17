@@ -36,7 +36,7 @@ exports.validate = (commits) => {
         console.warn('If you have somehow included human-generated commits in this push, revert them and push again');
         process.exit(0);
       } else {
-        console.log(`Validation passed for: ${commit.author.name}`);
+        console.log(`Validation passed for: ${commit.author.name} - yay!`);
       }
     }
 
