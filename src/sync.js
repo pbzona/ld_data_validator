@@ -24,9 +24,10 @@ const makeSyncRequest = async (project, env, flag, newConfig, oldConfig) => {
     }
   }
   console.log(config);
+
+  let errorLogs = [];
   
   const response = await axios(config).catch(function (error) {
-    let errorLogs = [];
     if (error.response) {
       // The request was made and the server responded with a status code
       // that falls out of the range of 2xx
@@ -41,9 +42,13 @@ const makeSyncRequest = async (project, env, flag, newConfig, oldConfig) => {
       // Something happened in setting up the request that triggered an Error
       errorLogs.push('Error', error.message);
     }
-    errorLogs.push(error.config, response);
-    core.setFailed(errorLogs.map(JSON.stringify).join('\n\n'));
+    errorLogs.push(error.config);
   });
+
+  if (errorLogs.length > 0) {
+    errorLogs.push(response.data);
+    core.setFailed(errorLogs.map(JSON.stringify).join('\n\n'));
+  }
   return response;
 }
 
