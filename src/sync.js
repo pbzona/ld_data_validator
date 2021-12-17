@@ -41,7 +41,7 @@ const makeSyncRequest = async (project, env, flag, newConfig, oldConfig) => {
       // Something happened in setting up the request that triggered an Error
       errorLogs.push('Error', error.message);
     }
-    errorLogs.push(error.config);
+    errorLogs.push(error.config, response);
     core.setFailed(errorLogs.map(JSON.stringify).join('\n\n'));
   });
   return response;
