@@ -11336,7 +11336,6 @@ const parseFlagEnv = (pathToFile) => {
   } else {
     flagEnv = flagConfigName.replace("env-","");
   }
-  console.log(`Env ${flagEnv} parsed from filename ${flagConfigName}`);
   return flagEnv;
 }
 
@@ -11518,7 +11517,7 @@ exports.validate = (commits) => {
         console.warn('If you have somehow included human-generated commits in this push, revert them and push again');
         process.exit(0);
       } else {
-        console.log(`Validation passed for: ${commit.author.name} - yay!`);
+        console.log(`Validation passed for: ${commit.author.name}`);
       }
     }
 

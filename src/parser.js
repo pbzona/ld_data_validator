@@ -18,7 +18,6 @@ const parseFlagEnv = (pathToFile) => {
   } else {
     flagEnv = flagConfigName.replace("env-","");
   }
-  console.log(`Env ${flagEnv} parsed from filename ${flagConfigName}`);
   return flagEnv;
 }
 
