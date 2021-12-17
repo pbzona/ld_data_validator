@@ -11,8 +11,14 @@ const parseFlagKey = (pathToFile) => {
 }
 
 const parseFlagEnv = (pathToFile) => {
-  const flagConfigName = path.parse(pathToFile).name
-  return flagConfigName == 'core-metadata' ? 'global' : flagConfigName;
+  const flagConfigName = path.parse(pathToFile).name;
+  let flagEnv;
+  if ((flagConfigName == 'core-metadata') || (flagConfigName == 'flag')) {
+    flagEnv = 'production'; // early return; and "global" doesn't work, so this is hacky
+  } else {
+    flagEnv = flagConfigName.replace("env-","");
+  }
+  return flagEnv;
 }
 
 const parseFlagProject = (pathToFile) => {

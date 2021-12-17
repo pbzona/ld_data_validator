@@ -11329,8 +11329,14 @@ const parseFlagKey = (pathToFile) => {
 }
 
 const parseFlagEnv = (pathToFile) => {
-  const flagConfigName = path.parse(pathToFile).name
-  return flagConfigName == 'core-metadata' ? 'global' : flagConfigName;
+  const flagConfigName = path.parse(pathToFile).name;
+  let flagEnv;
+  if ((flagConfigName == 'core-metadata') || (flagConfigName == 'flag')) {
+    flagEnv = 'production'; // early return; and "global" doesn't work, so this is hacky
+  } else {
+    flagEnv = flagConfigName.replace("env-","");
+  }
+  return flagEnv;
 }
 
 const parseFlagProject = (pathToFile) => {
@@ -11351,6 +11357,7 @@ module.exports = {
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 const axios = __nccwpck_require__(6545);
+const core = __nccwpck_require__(2186);
 
 // Make this an action input
 const baseUrl = process.env.INPUT_BASEURL
@@ -11375,8 +11382,31 @@ const makeSyncRequest = async (project, env, flag, newConfig, oldConfig) => {
     }
   }
   console.log(config);
+
+  let errorLogs = [];
   
-  const response = await axios(config);
+  const response = await axios(config).catch(function (error) {
+    if (error.response) {
+      // The request was made and the server responded with a status code
+      // that falls out of the range of 2xx
+      errorLogs.push("Server responded with an error",
+                      error.response.data, 
+                      error.response.status, 
+                      error.response.headers);
+    } else if (error.request) {
+      // The request was made but no response was received
+      errorLogs.push("No response received for this request:", error.request);
+    } else {
+      // Something happened in setting up the request that triggered an Error
+      errorLogs.push('Error', error.message);
+    }
+    errorLogs.push(error.config);
+  });
+
+  if (errorLogs.length > 0) {
+    errorLogs.push(response);
+    core.setFailed(errorLogs.map(JSON.stringify).join('\n\n'));
+  }
   return response;
 }
 
